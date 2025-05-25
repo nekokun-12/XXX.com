@@ -1,7 +1,4 @@
-#include <iostream>
-#include <map>
-#include <string>
-#include <vector>
+#include <bits/stdc++.h>
 #include "httplib.h"
 #include <nlohmann/json.hpp>
 #include <user/user_info.h>
@@ -10,32 +7,17 @@ using json = nlohmann::json;
 // 簡易的用戶結構與資料庫模擬
 int main()
 {
-    std::cout << " ";
     httplib::Server svr;
     User info;
-    user_db;
-    // GET /api/users/:id - 取得指定 ID 的用戶資訊
-    svr.Get("/api/users/:id", [&](const httplib::Request &req, httplib::Response &res) {
-        int user_id = std::stoi(req.path_params.at("id"));  // 取得路徑參數 id 並轉為整數
-        if (user_db.find(user_id) != user_db.end()) {
-            // 找到用戶，構造 JSON 回應
-            User u = user_db[user_id];
-            json j;
-            j["id"] = u.id;
-            j["name"] = u.name;
-            j["age"] = u.age;
-            res.set_content(j.dump(), "application/json");
-        } else {
-            // 找不到用戶，回傳 404
-            res.status = 404;
-            json err;
-            err["error"] = "User not found";
-            res.set_content(err.dump(), "application/json");
-        } });
 
-    // POST /api/users - 接收 JSON 格式的新用戶資料，建立新用戶
-    svr.Post("/api/users", [&](const httplib::Request &req, httplib::Response &res)
-             {
+    // GET /api/help - 顯示各項功能
+    svr.Get("/api/help", [&](const httplib::Request &req, httplib::Response &res) {
+
+    });
+    
+    // POST /api/register - 接收 JSON 格式的新用戶資料，建立新用戶
+    svr.Post("/api/register", [&](const httplib::Request &req, httplib::Response &res)
+            {
             try {
                 json req_json = json::parse(req.body);
                 // 簡單驗證必要欄位是否存在
@@ -64,6 +46,41 @@ int main()
                 res.status = 400;
                 res.set_content(R"({"error":"Invalid JSON"})", "application/json");
             } });
+    
+
+    // GET /api/user_info/:id - 取得指定 ID 的用戶資訊
+    svr.Get("/api/user_info/:id", [&](const httplib::Request &req, httplib::Response &res) {
+        int user_id = std::stoi(req.path_params.at("id"));  // 取得路徑參數 id 並轉為整數
+        if (user_db.find(user_id) != user_db.end()) {
+            // 找到用戶，構造 JSON 回應
+            User u = user_db[user_id];
+            json j;
+            j["id"] = u.id;
+            j["name"] = u.name;
+            j["age"] = u.age;
+            res.set_content(j.dump(), "application/json");
+        } else {
+            // 找不到用戶，回傳 404
+            res.status = 404;
+            json err;
+            err["error"] = "User not found";
+            res.set_content(err.dump(), "application/json");
+        } });
+
+    // POST /api/change_info/:id/:info - 修改用戶特定資訊
+    svr.Post("/api/users/change_info/:id/:info", [&](const httplib::Request &req, httplib::Response &rep) {
+
+    });
+
+    // POST /api/send/:id - 傳送訊息（加入至conversation中）
+    svr.Post("/api/send/:id", [&](const httplib::Request &req, httplib::Response &rep) {
+
+    });
+
+    // Get /api/get_message/:index - 取得訊息
+    svr.Get("/api/get_message/:index", [&](const httplib::Request &req, httplib::Response &rep) {
+
+    });
 
     std::cout << "User API 伺服器啟動中..." << std::endl;
     svr.listen("localhost", 8080);
