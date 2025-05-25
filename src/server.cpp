@@ -8,10 +8,9 @@
 using json = nlohmann::json;
 
 // 簡易的用戶結構與資料庫模擬
-
-
 int main()
 {
+    std::cout << " ";
     httplib::Server svr;
     User info;
     user_db;
