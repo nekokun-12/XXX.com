@@ -4,23 +4,17 @@
 #include <vector>
 #include "httplib.h"
 #include <nlohmann/json.hpp>
+#include <user/user_info.h>
 using json = nlohmann::json;
 
 // 簡易的用戶結構與資料庫模擬
-struct User
-{
-    int id;
-    std::string name;
-    int age;
-    std::vector<std::string> conversation_record;
-};
-static std::map<int, User> user_db = {};
-static int next_id = 1;
+
 
 int main()
 {
     httplib::Server svr;
-
+    User info;
+    user_db;
     // GET /api/users/:id - 取得指定 ID 的用戶資訊
     svr.Get("/api/users/:id", [&](const httplib::Request &req, httplib::Response &res) {
         int user_id = std::stoi(req.path_params.at("id"));  // 取得路徑參數 id 並轉為整數
