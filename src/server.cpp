@@ -23,7 +23,7 @@ int main()
                 // 簡單驗證必要欄位是否存在
                 if (!req_json.contains("name") || !req_json.contains("age")) {
                     res.status = 400;
-                    res.set_content(R"({"error":"Missing name or age"})", "application/json");
+                    res.set_content(R"({"error":"Missing some of the info"})", "application/json");
                     return;
                 }
                 // 取得新用戶資料
