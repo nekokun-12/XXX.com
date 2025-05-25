@@ -12,7 +12,7 @@ struct User
     int length;
     int weight;
     int height;
-    string habit;
+    std::string habit;
     std::vector<std::string> conversation_record;
 };
 static std::map<int, User> user_db = {};
