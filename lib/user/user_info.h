@@ -4,14 +4,14 @@
 
 struct User
 {
-    int id;
-    std::string user_name;
+    int id = 0;
+    std::string name;
     std::string gender;
-    int age;
+    int age = 0;
     std::string job;
-    int length;
-    int weight;
-    int height;
+    int length = 0;
+    int weight = 0;
+    int height = 0;
     std::string habit;
     std::vector<std::string> conversation_record;
 };
