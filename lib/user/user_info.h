@@ -6,7 +6,7 @@ using namespace std;
 struct User
 {
     int id;
-    string user_name;
+    string name;
     string gender;
     int age;
     string job;
