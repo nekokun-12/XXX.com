@@ -10,7 +10,6 @@ struct User
     string gender;
     int age;
     string job;
-    int length;
     int weight;
     int height;
     string habit;
