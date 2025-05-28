@@ -16,36 +16,41 @@ int main()
     });
     
     // POST /api/register - 接收 JSON 格式的新用戶資料，建立新用戶
-    svr.Post("/api/register", [&](const httplib::Request &req, httplib::Response &res)
-            {
-            try {
-                json req_json = json::parse(req.body);
-                // 簡單驗證必要欄位是否存在
-                if (!req_json.contains("name") || !req_json.contains("age")) {
+    svr.Post("/api/register", [&](const httplib::Request &req, httplib::Response &res) {
+        try {
+            json req_json = json::parse(req.body);
+            // 簡單驗證必要欄位是否存在
+            for(std::string info : user_info) {
+                if (!req_json.contains(info)) {
                     res.status = 400;
                     res.set_content(R"({"error":"Missing some of the info"})", "application/json");
                     return;
                 }
-                // 取得新用戶資料
-                std::string name = req_json["name"];
-                int age = req_json["age"];
-                // 建立 User 物件並存入資料庫
-                User new_user = { next_id, name, age };
-                user_db[next_id] = new_user;
-                // 準備回傳的 JSON（包含分配的 id）
-                json resp;
-                resp["id"] = new_user.id;
-                resp["name"] = new_user.name;
-                resp["age"] = new_user.age;
-                next_id++;  // 更新下一個可用 ID
-                // 設定回應內容與狀態碼 201 (已建立)
-                res.status = 201;
-                res.set_content(resp.dump(), "application/json");
-            } catch (json::parse_error& e) {
-                // JSON 格式不正確
-                res.status = 400;
-                res.set_content(R"({"error":"Invalid JSON"})", "application/json");
-            } });
+            }
+            // 建立 User 物件並存入資料庫
+            User new_user = { next_id, req_json["password"], req_json["name"], req_json["gender"], req_json["age"], req_json["weight"], req_json["height"], req_json["job"], req_json["habit"] };
+            user_db[next_id] = new_user;
+            // 準備回傳的 JSON（包含分配的 id）
+            json resp;
+            resp["id"] = new_user.id;
+            resp["password"] = new_user.password;
+            resp["name"] = new_user.name;
+            resp["gender"] = new_user.gender;
+            resp["age"] = new_user.age;
+            resp["weight"] = new_user.weight;
+            resp["height"] = new_user.height;
+            resp["job"] = new_user.job;
+            resp["habit"] = new_user.habit;
+            next_id++;  // 更新下一個可用 ID
+            // 設定回應內容與狀態碼 201 (已建立)
+            res.status = 201;
+            res.set_content(resp.dump(), "application/json");
+        }
+        catch (json::parse_error& e) {
+            // JSON 格式不正確
+            res.status = 400;
+            res.set_content(R"({"error":"Invalid JSON"})", "application/json");
+        } });
     
 
     // GET /api/user_info/:id - 取得指定 ID 的用戶資訊
