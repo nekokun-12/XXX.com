@@ -3,6 +3,7 @@
 #include <nlohmann/json.hpp>
 #include <user/user_info.h>
 #include <user/function.h>
+#include <user/conversation.h>
 using json = nlohmann::json;
 
 // 簡易的用戶結構與資料庫模擬
@@ -28,7 +29,7 @@ int main()
                 if (!req_json.contains(info)) {
                     res.status = 400;
                     res.set_content(R"({"error":"Missing some of the info"})", "application/json");
-                    return;
+                    return; // 跳出
                 }
             }
             // 建立 User 物件並存入資料庫
@@ -57,43 +58,52 @@ int main()
         }
     });
     
-
     // GET /api/user_info/:id - 取得指定 ID 的用戶資訊
     svr.Get("/api/user_info/:id", [&](const httplib::Request &req, httplib::Response &res) {
         int user_id = std::stoi(req.path_params.at("id"));  // 取得路徑參數 id 並轉為整數
-        if (user_db.find(user_id) != user_db.end()) {
-            // 找到用戶，構造 JSON 回應
-            User u = user_db[user_id];
-            json j;
-            j["id"] = u.id;
-            j["password"] = u.password;
-            j["name"] = u.name;
-            j["gender"] = u.gender;
-            j["age"] = u.age;
-            j["weight"] = u.weight;
-            j["height"] = u.height;
-            j["job"] = u.job;
-            j["hobby"] = u.hobby;
-            res.status = 200;
-            res.set_content(j.dump(), "application/json");
-        }
-        else {
-            // 找不到用戶，回傳 404
+        if (user_db.find(user_id) == user_db.end()) {
             res.status = 404;
-            json err;
-            err["error"] = "User not found";
-            res.set_content(err.dump(), "application/json");
+            res.set_content(R"({"error":"User not found"})", "application/json");
+            return;
         }
+
+        User u = user_db[user_id];
+        json j;
+        j["id"] = u.id;
+        j["password"] = u.password;
+        j["name"] = u.name;
+        j["gender"] = u.gender;
+        j["age"] = u.age;
+        j["weight"] = u.weight;
+        j["height"] = u.height;
+        j["job"] = u.job;
+        j["hobby"] = u.hobby;
+        res.status = 200;
+        res.set_content(j.dump(), "application/json");
     });
 
-    // POST /api/change_info/:id/:info - 修改指定用戶特定資訊
-    svr.Post("/api/users/change_info/:id/:info", [&](const httplib::Request &req, httplib::Response &res) {
+    // POST /api/change_info - 修改指定用戶特定資訊
+    svr.Post("/api/users/change_info", [&](const httplib::Request &req, httplib::Response &res) {
 
     });
 
-    // POST /api/send/:id - 傳送訊息（加入至conversation中）
-    svr.Post("/api/send/:id", [&](const httplib::Request &req, httplib::Response &res) {
+    // POST /api/send - 傳送訊息（加入至conversation中）
+    svr.Post("/api/send", [&](const httplib::Request &req, httplib::Response &res) {
+        json req_json = json::parse(req.body);
+        if(!req_json.contains("message") || !req_json.contains("id")) {
+            res.status = 400;
+            res.set_content(R"({"error":"Json format error"})", "application/json");
+            return;
+        }
+        if(user_db.find(req_json["id"]) == user_db.end()) {
+            res.status = 404;
+            res.set_content(R"({"error":"Id not found"})", "application/json");
+            return;
+        }
+        conversation.push_back({ req_json["id"], req_json["message"] });
 
+        res.status = 201;
+        res.set_content(R"({"success":"message successfully added to conversation"})", "application/json");
     });
 
     // Get /api/get_message/:index - 取得指定訊息
@@ -101,21 +111,24 @@ int main()
         int index = std::stoi(req.path_params.at("index"));
         if(0 < index && index <= conversation.size()) {
             json j;
-            j["content"] = conversation[index - 1];
+            j["id"] = conversation[index - 1].id;
+            j["user"] = user_db[conversation[index - 1].id].name;
+            j["content"] = conversation[index - 1].message;
             res.status = 200;
             res.set_content(j.dump(), "application/json");
         }
         else if((0-conversation.size()) <= index && index < 0) {
             json j;
-            j["content"] = conversation[conversation.size()+index];
+            int s = conversation.size();
+            j["id"] = conversation[s - index].id;
+            j["user"] = user_db[conversation[s - index].id].name;
+            j["content"] = conversation[s - index].message;
             res.status = 200;
             res.set_content(j.dump(), "application/json");
         }
         else {
             res.status = 404;
-            json err;
-            err["error"] = "Index out of range";
-            res.set_content(err.dump(), "application/json");
+            res.set_content(R"({"error":"Index out of range"})", "application/json");
         }
     });
 
