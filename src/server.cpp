@@ -71,7 +71,8 @@ int main()
             j["job"] = u.job;
             j["hobby"] = u.hobby;
             res.set_content(j.dump(), "application/json");
-        } else {
+        }
+        else {
             // 找不到用戶，回傳 404
             res.status = 404;
             json err;
@@ -81,18 +82,33 @@ int main()
     });
 
     // POST /api/change_info/:id/:info - 修改用戶特定資訊
-    svr.Post("/api/users/change_info/:id/:info", [&](const httplib::Request &req, httplib::Response &rep) {
+    svr.Post("/api/users/change_info/:id/:info", [&](const httplib::Request &req, httplib::Response &res) {
 
     });
 
     // POST /api/send/:id - 傳送訊息（加入至conversation中）
-    svr.Post("/api/send/:id", [&](const httplib::Request &req, httplib::Response &rep) {
+    svr.Post("/api/send/:id", [&](const httplib::Request &req, httplib::Response &res) {
 
     });
 
     // Get /api/get_message/:index - 取得訊息
-    svr.Get("/api/get_message/:index", [&](const httplib::Request &req, httplib::Response &rep) {
-
+    svr.Get("/api/get_message/:index", [&](const httplib::Request &req, httplib::Response &res) {
+        int index = std::stoi(req.path_params.at("index"));
+        if(0 < index && index <= conversation.size()) {
+            json j;
+            j["content"] = conversation[index - 1];
+            res.set_content(j.dump(), "application/json");
+        }
+        else if((0-conversation.size()) <= index && index < 0) {
+            json j;
+            j["content"] = conversation[conversation.size()+index];
+            res.set_content(j.dump(), "application/json");
+        }
+        else {
+            json err;
+            err["error"] = "Index out of range";
+            res.set_content(err.dump(), "application/json");
+        }
     });
 
     std::cout << "User API 伺服器啟動中..." << std::endl;
