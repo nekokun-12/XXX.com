@@ -2,6 +2,7 @@
 #include "httplib.h"
 #include <nlohmann/json.hpp>
 #include <user/user_info.h>
+#include <user/function.h>
 using json = nlohmann::json;
 
 // 簡易的用戶結構與資料庫模擬
@@ -12,7 +13,10 @@ int main()
 
     // GET /api/help - 顯示各項功能
     svr.Get("/api/help", [&](const httplib::Request &req, httplib::Response &res) {
-
+        json j;
+        j["content"] = functions;
+        res.status = 200;
+        res.set_content(j.dump(), "application/json");
     });
     
     // POST /api/register - 接收 JSON 格式的新用戶資料，建立新用戶
@@ -70,6 +74,7 @@ int main()
             j["height"] = u.height;
             j["job"] = u.job;
             j["hobby"] = u.hobby;
+            res.status = 200;
             res.set_content(j.dump(), "application/json");
         }
         else {
@@ -81,7 +86,7 @@ int main()
         }
     });
 
-    // POST /api/change_info/:id/:info - 修改用戶特定資訊
+    // POST /api/change_info/:id/:info - 修改指定用戶特定資訊
     svr.Post("/api/users/change_info/:id/:info", [&](const httplib::Request &req, httplib::Response &res) {
 
     });
@@ -91,20 +96,23 @@ int main()
 
     });
 
-    // Get /api/get_message/:index - 取得訊息
+    // Get /api/get_message/:index - 取得指定訊息
     svr.Get("/api/get_message/:index", [&](const httplib::Request &req, httplib::Response &res) {
         int index = std::stoi(req.path_params.at("index"));
         if(0 < index && index <= conversation.size()) {
             json j;
             j["content"] = conversation[index - 1];
+            res.status = 200;
             res.set_content(j.dump(), "application/json");
         }
         else if((0-conversation.size()) <= index && index < 0) {
             json j;
             j["content"] = conversation[conversation.size()+index];
+            res.status = 200;
             res.set_content(j.dump(), "application/json");
         }
         else {
+            res.status = 404;
             json err;
             err["error"] = "Index out of range";
             res.set_content(err.dump(), "application/json");
