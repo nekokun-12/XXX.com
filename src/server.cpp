@@ -28,7 +28,7 @@ int main()
                 }
             }
             // 建立 User 物件並存入資料庫
-            User new_user = { next_id, req_json["password"], req_json["name"], req_json["gender"], req_json["age"], req_json["weight"], req_json["height"], req_json["job"], req_json["habit"] };
+            User new_user = { next_id, req_json["password"], req_json["name"], req_json["gender"], req_json["age"], req_json["weight"], req_json["height"], req_json["job"], req_json["hobby"] };
             user_db[next_id] = new_user;
             // 準備回傳的 JSON（包含分配的 id）
             json resp;
@@ -40,7 +40,7 @@ int main()
             resp["weight"] = new_user.weight;
             resp["height"] = new_user.height;
             resp["job"] = new_user.job;
-            resp["habit"] = new_user.habit;
+            resp["hobby"] = new_user.hobby;
             next_id++;  // 更新下一個可用 ID
             // 設定回應內容與狀態碼 201 (已建立)
             res.status = 201;
@@ -50,7 +50,8 @@ int main()
             // JSON 格式不正確
             res.status = 400;
             res.set_content(R"({"error":"Invalid JSON"})", "application/json");
-        } });
+        }
+    });
     
 
     // GET /api/user_info/:id - 取得指定 ID 的用戶資訊
@@ -61,8 +62,14 @@ int main()
             User u = user_db[user_id];
             json j;
             j["id"] = u.id;
+            j["password"] = u.password;
             j["name"] = u.name;
+            j["gender"] = u.gender;
             j["age"] = u.age;
+            j["weight"] = u.weight;
+            j["height"] = u.height;
+            j["job"] = u.job;
+            j["hobby"] = u.hobby;
             res.set_content(j.dump(), "application/json");
         } else {
             // 找不到用戶，回傳 404
@@ -70,7 +77,8 @@ int main()
             json err;
             err["error"] = "User not found";
             res.set_content(err.dump(), "application/json");
-        } });
+        }
+    });
 
     // POST /api/change_info/:id/:info - 修改用戶特定資訊
     svr.Post("/api/users/change_info/:id/:info", [&](const httplib::Request &req, httplib::Response &rep) {
