@@ -1,21 +1,22 @@
 #ifndef USER_INFO_H
 #define USER_INFO_H
 #include <bits/stdc++.h>
-using namespace std;
 
 struct User
 {
-    int id;
-    string name;
-    string gender;
-    int age;
-    string job;
-    int weight;
-    int height;
-    string habit;
-    vector<string> conversation_record;
+    int id = 0;
+    int password = 0;
+    std::string name;
+    std::string gender;
+    int age = 0;
+    int weight = 0;
+    int height = 0;
+    std::string job;
+    std::vector<std::string> hobby;
 };
-static map<int, User> user_db = {};
+std::vector<std::string> user_info = {"password", "name", "gender", "age", "weight", "height", "job", "hobby"};
+static std::map<int, User> user_db = {};
+static std::map<int, std::string> conversation = {};
 static int next_id = 1;
 
 #endif
