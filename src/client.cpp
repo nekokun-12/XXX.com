@@ -19,7 +19,53 @@ int main()
         }
         else if (n == 1)// register
         {
-            
+            std::cout << "\n[2] 建立新用戶（輸入資料）" << std::endl;
+
+            std::string password, name, gender, job, hobby;
+            int age, weight, height;
+
+            std::cout << "請輸入帳號密碼：";
+            std::getline(std::cin, password);
+            std::cout << "請輸入姓名：";
+            std::getline(std::cin, name);
+            std::cout << "請輸入性別：";
+            std::getline(std::cin, gender);
+            std::cout << "請輸入年齡：";
+            std::cin >> age;
+            std::cout << "請輸入體重：";
+            std::cin >> weight;
+            std::cout << "請輸入身高：";
+            std::cin >> height;
+            std::cin.ignore(); // 清除 cin 的換行殘留
+            std::cout << "請輸入職業：";
+            std::getline(std::cin, job);
+            std::cout << "請輸入興趣：";
+            std::getline(std::cin, hobby);
+
+            // 組成 JSON
+            json new_user = {
+                {"password", password},
+                {"name", name},
+                {"gender", gender},
+                {"age", age},
+                {"weight", weight},
+                {"height", height},
+                {"job", job},
+                {"hobby", hobby}
+            };
+
+            // 發送 POST 請求
+            auto res2 = cli.Post("/api/register", new_user.dump(), "application/json");
+            int new_id = -1;
+            if (res2 && res2->status == 201) {
+                std::cout << "用戶建立成功：" << res2->body << std::endl;
+                auto resp_json = json::parse(res2->body);
+                new_id = resp_json["id"];
+            } else {
+                std::cerr << "建立用戶失敗，狀態：" << (res2 ? res2->status : 0) << std::endl;
+                return 1;
+            }
+
 
             
         }
