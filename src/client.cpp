@@ -97,9 +97,48 @@ int main()
         }
         else if(n == 2)// user_info/:id
         {
+            httplib::Client cli("localhost", 8080); // 本機伺服器
+
+
+            int id;
+            std::cout << "請輸入要查詢的用戶 ID：";
+            std::cin >> id;
+
+
+            // 建立 JSON 請求資料
+            json request_body = {
+                {"id", id}
+            };
+
+
+            // 傳送 POST 請求，內容為 JSON
+            auto res = cli.Post("/api/get_user", request_body.dump(), "application/json");
+
+
+            if (res && res->status == 200) {
+                // 成功收到伺服器回應
+                json user = json::parse(res->body);
+                std::cout << "查詢成功：" << std::endl;
+                std::cout << "ID: " << user["id"] << std::endl;
+                std::cout << "姓名: " << user["name"] << std::endl;
+                std::cout << "年齡: " << user["age"] << std::endl;
+                std::cout << "性別: " << user["gender"] << std::endl;
+                std::cout << "體重: " << user["weight"] << std::endl;
+                std::cout << "身高: " << user["height"] << std::endl;
+                std::cout << "職業: " << user["job"] << std::endl;
+                std::cout << "興趣: " << user["hobby"] << std::endl;
+            } else if (res && res->status == 404) {
+                std::cout << "用戶不存在。" << std::endl;
+            } else {
+                std::cout << "查詢失敗，狀態碼：" << (res ? res->status : 0) << std::endl;
+                if (res) {
+                    std::cout << "回應內容：" << res->body << std::endl;
+                }
+            }
 
 
         }
+
         else if(n == 3)// change_info/:id
         {
 
