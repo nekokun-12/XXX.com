@@ -80,7 +80,26 @@ int main()
         }
         else if(n == 4)// send_Message
         {
+            int id;
+            std::string message;
+            std::cin.ignore(); // 清除換行殘留
+            std::cout << "請輸入用戶 ID：";
+            std::cin >> id;
+            std::cin.ignore();
+            std::cout << "請輸入訊息內容：";
+            std::getline(std::cin, message);
 
+            json msg = {
+                {"id", id},
+                {"message", message}
+            };
+
+            auto res = cli.Post("/api/send", msg.dump(), "application/json");
+            if (res && res->status == 201) {
+                std::cout << "訊息傳送成功：" << res->body << std::endl;
+            } else {
+                std::cerr << "傳送失敗，狀態：" << (res ? res->status : 0) << std::endl;
+            }
         }
         else if(n == 5)// get_message/:index
         {
