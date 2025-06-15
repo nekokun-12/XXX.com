@@ -82,8 +82,16 @@ int main()
         res.set_content(j.dump(), "application/json");
     });
 
-    // POST /api/change_info - 修改指定用戶特定資訊
-    svr.Post("/api/users/change_info", [&](const httplib::Request &req, httplib::Response &res) {
+    // POST /api/change_info/:id - 修改指定用戶特定資訊
+    svr.Post("/api/users/change_info/:id", [&](const httplib::Request &req, httplib::Response &res) {
+        json req_json = json::parse(req.body);
+        bool is_valid = false;
+        for(int i = 0; i < user_info.size(); i++) {
+            if(!req_json.contains(user_info[i]))
+            continue;
+
+            
+        }
 
     });
 
