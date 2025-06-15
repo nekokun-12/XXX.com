@@ -7,6 +7,25 @@ int main()
 {
     httplib::Client cli("localhost", 8080);
 
+
+    // POST /api/help - 顯示各項功能
+    if (auto res = cli.Post("/api/help")){
+        if (res -> status == 200){
+            json user_json = json::parse(res.body);
+            std::cout << "Please enter the number." << std::endl;
+            for (int i = 0; i != functions.size(); i++){
+                std::cout << user_json[i][0] << " : " << user_json[i][2];
+            }
+        }
+        else if (res -> status == 404){
+
+        }
+    else {
+        std::cout << "GET 請求失敗\n";
+    }
+    }
+
+
     std::cout << " 0 : /help 顯示各種功能 \n";
     while(true)
     {
@@ -17,6 +36,7 @@ int main()
 
 
         }
+        
         else if (n == 1)// register
         {
             std::cout << "\n[2] 建立新用戶（輸入資料）" << std::endl;
