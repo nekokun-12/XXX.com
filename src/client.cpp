@@ -1,6 +1,9 @@
 #include <iostream>
 #include "httplib.h"
 #include <nlohmann/json.hpp>
+#include <user/user_info.h>
+#include <user/function.h>
+#include <user/conversation.h>
 using json = nlohmann::json;
 
 int main()
