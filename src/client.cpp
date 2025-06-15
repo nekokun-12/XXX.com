@@ -10,7 +10,7 @@ int main()
     std::cout << " 0 : /help 顯示各種功能 \n";
     while(true)
     {
-        int n;
+        int n,id = 1;
         std::cin >> n;
         if(n == 0)// help
         {
@@ -19,11 +19,11 @@ int main()
         }
         else if (n == 1)// register
         {
-            std::cout << "\n[2] 建立新用戶（輸入資料）" << std::endl;
+            std::cout << "\n建立新用戶（輸入資料）" << std::endl;
 
-            std::string password, name, gender, job, hobby;
+            std::string password, name,gender,  job, hobby;
             int age, weight, height;
-
+            
             std::cout << "請輸入帳號密碼：";
             std::getline(std::cin, password);
             std::cout << "請輸入姓名：";
@@ -65,8 +65,8 @@ int main()
                 std::cerr << "建立用戶失敗，狀態：" << (res2 ? res2->status : 0) << std::endl;
                 return 1;
             }
-
-
+            std::cout << "Your id is: " << id << "\n" ;
+            id++;
             
         }
         else if(n == 2)// user_info/:id
@@ -83,7 +83,7 @@ int main()
             int id;
             std::string message;
             std::cin.ignore(); // 清除換行殘留
-            std::cout << "請輸入用戶 ID：";
+            std::cout << "\n請輸入用戶 ID：";
             std::cin >> id;
             std::cin.ignore();
             std::cout << "請輸入訊息內容：";
@@ -107,10 +107,10 @@ int main()
         }
         else if(n == 6)// end
         {
-
+            break;
         }
     }     
-    
+ 
 
 
     return 0;
