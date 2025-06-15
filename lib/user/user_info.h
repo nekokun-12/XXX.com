@@ -2,8 +2,8 @@
 #define USER_INFO_H
 #include <iostream>
 #include <vector>
-#include <string>
 #include <map>
+#include <string>
 
 struct User
 {
