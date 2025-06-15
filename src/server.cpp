@@ -142,6 +142,9 @@ int main()
             res.set_content(R"({"error":"Info not found"})", "application/json");
             return;
         }
+
+        res.status = 200;
+        res.set_content(R"({"success":"user info successfully change"})", "application/json");
     });
 
     // /api/send - 傳送訊息（加入至conversation中）
