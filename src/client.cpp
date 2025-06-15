@@ -141,7 +141,58 @@ int main()
 
         else if(n == 3)// change_info/:id
         {
+            httplib::Client cli("localhost", 8080);
 
+            int id;
+            std::cout << "請輸入要修改的用戶 ID：";
+            std::cin >> id;
+            std::cin.ignore(); // 清除換行符號
+
+            std::string name, gender, job, hobby;
+            int age;
+            double weight, height;
+
+            std::cout << "請輸入新的姓名 (留空不修改)：";
+            std::getline(std::cin, name);
+            std::cout << "請輸入新的年齡 (留空不修改)：";
+            std::string age_str;
+            std::getline(std::cin, age_str);
+            std::cout << "請輸入新的性別 (留空不修改)：";
+            std::getline(std::cin, gender);
+            std::cout << "請輸入新的體重 (留空不修改)：";
+            std::string weight_str;
+            std::getline(std::cin, weight_str);
+            std::cout << "請輸入新的身高 (留空不修改)：";
+            std::string height_str;
+            std::getline(std::cin, height_str);
+            std::cout << "請輸入新的職業 (留空不修改)：";
+            std::getline(std::cin, job);
+            std::cout << "請輸入新的興趣 (留空不修改)：";
+            std::getline(std::cin, hobby);
+
+            // 建立 JSON，只有非空欄位會被加入
+            json update_body;
+            update_body["id"] = id;
+            if (!name.empty()) update_body["name"] = name;
+            if (!age_str.empty()) update_body["age"] = std::stoi(age_str);
+            if (!gender.empty()) update_body["gender"] = gender;
+            if (!weight_str.empty()) update_body["weight"] = std::stod(weight_str);
+            if (!height_str.empty()) update_body["height"] = std::stod(height_str);
+            if (!job.empty()) update_body["job"] = job;
+            if (!hobby.empty()) update_body["hobby"] = hobby;
+
+            auto res = cli.Post("/api/update_user", update_body.dump(), "application/json");
+
+            if (res && res->status == 200) {
+                std::cout << "用戶資訊修改成功！" << std::endl;
+                json updated_user = json::parse(res->body);
+                std::cout << "最新資料：" << updated_user.dump(4) << std::endl;
+            } else {
+                std::cout << "修改失敗，狀態碼：" << (res ? res->status : 0) << std::endl;
+                if (res) {
+                    std::cout << "回應內容：" << res->body << std::endl;
+                }
+            }
         }
         else if(n == 4)// send_Message
         {
