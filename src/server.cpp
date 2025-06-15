@@ -12,7 +12,7 @@ int main()
     httplib::Server svr;
     User info;
 
-    // GET /api/help - 顯示各項功能
+    // /api/help - 顯示各項功能
     svr.Get("/api/help", [&](const httplib::Request &req, httplib::Response &res) {
         json j;
         j["content"] = functions;
@@ -20,8 +20,8 @@ int main()
         res.set_content(j.dump(), "application/json");
     });
     
-    // POST /api/register - 接收 JSON 格式的新用戶資料，建立新用戶
-    svr.Post("/api/register", [&](const httplib::Request &req, httplib::Response &res) {
+    // /api/register - 接收 JSON 格式的新用戶資料，建立新用戶
+    svr.Get("/api/register", [&](const httplib::Request &req, httplib::Response &res) {
         try {
             json req_json = json::parse(req.body);
             // 簡單驗證必要欄位是否存在
@@ -58,7 +58,7 @@ int main()
         }
     });
     
-    // GET /api/user_info/:id - 取得指定 ID 的用戶資訊
+    // /api/user_info/:id - 取得指定 ID 的用戶資訊
     svr.Get("/api/user_info/:id", [&](const httplib::Request &req, httplib::Response &res) {
         int user_id = std::stoi(req.path_params.at("id"));  // 取得路徑參數 id 並轉為整數
         if (user_db.find(user_id) == user_db.end()) {
@@ -82,20 +82,27 @@ int main()
         res.set_content(j.dump(), "application/json");
     });
 
-    // POST /api/change_info/:id - 修改指定用戶特定資訊
-    svr.Post("/api/users/change_info/:id", [&](const httplib::Request &req, httplib::Response &res) {
+    // /api/change_info/:id - 修改指定用戶特定資訊
+    svr.Get("/api/users/change_info/:id", [&](const httplib::Request &req, httplib::Response &res) {
+        int user_id = std::stoi(req.path_params.at("id"));
+        if (user_db.find(user_id) == user_db.end()) {
+            res.status = 404;
+            res.set_content(R"({"error":"User not found"})", "application/json");
+            return;
+        }
+
         json req_json = json::parse(req.body);
         bool is_valid = false;
         for(int i = 0; i < user_info.size(); i++) {
             if(!req_json.contains(user_info[i]))
             continue;
 
-            
+            user_db[user_id];
         }
 
     });
 
-    // POST /api/send - 傳送訊息（加入至conversation中）
+    // /api/send - 傳送訊息（加入至conversation中）
     svr.Post("/api/send", [&](const httplib::Request &req, httplib::Response &res) {
         json req_json = json::parse(req.body);
         if(!req_json.contains("message") || !req_json.contains("id")) {
@@ -114,7 +121,7 @@ int main()
         res.set_content(R"({"success":"message successfully added to conversation"})", "application/json");
     });
 
-    // Get /api/get_message/:index - 取得指定訊息
+    // /api/get_message/:index - 取得指定訊息
     svr.Get("/api/get_message/:index", [&](const httplib::Request &req, httplib::Response &res) {
         int index = std::stoi(req.path_params.at("index"));
         if(0 < index && index <= conversation.size()) {
