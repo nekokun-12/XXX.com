@@ -1,6 +1,8 @@
 #ifndef CONVERSATION_H
 #define CONVERSATION_H
-#include <bits/stdc++.h>
+#include <iostream>
+#include <vector>
+#include <string>
 
 struct Message
 {

@@ -1,6 +1,7 @@
 #ifndef FUNCTION_H
 #define FUNCTION_H
-#include <bits/stdc++.h>
+#include <iostream>
+#include <string>
 
 std::string functions[6][3] = {
     { "1.help", "/api/help", "顯示各項功能" },

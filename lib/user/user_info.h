@@ -1,6 +1,8 @@
 #ifndef USER_INFO_H
 #define USER_INFO_H
-#include <bits/stdc++.h>
+#include <iostream>
+#include <vector>
+#include <string>
 
 struct User
 {

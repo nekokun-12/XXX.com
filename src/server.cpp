@@ -92,14 +92,53 @@ int main()
         }
 
         json req_json = json::parse(req.body);
+        int ass_ct = 0;
         bool is_valid = false;
-        for(int i = 0; i < user_info.size(); i++) {
-            if(!req_json.contains(user_info[i]))
-            continue;
-
-            user_db[user_id];
+        if(req_json.contains(user_info[ass_ct])) {
+            user_db[user_id].password = (req_json[user_info[ass_ct]]);
+            is_valid = true;
+        }
+        ass_ct++;
+        if(req_json.contains(user_info[ass_ct])) {
+            user_db[user_id].name = req_json[user_info[ass_ct]];
+            is_valid = true;
+        }
+        ass_ct++;
+        if(req_json.contains(user_info[ass_ct])) {
+            user_db[user_id].gender = req_json[user_info[ass_ct]];
+            is_valid = true;
+        }
+        ass_ct++;
+        if(req_json.contains(user_info[ass_ct])) {
+            user_db[user_id].age = req_json[user_info[ass_ct]];
+            is_valid = true;
+        }
+        ass_ct++;
+        if(req_json.contains(user_info[ass_ct])) {
+            user_db[user_id].weight = req_json[user_info[ass_ct]];
+            is_valid = true;
+        }
+        ass_ct++;
+        if(req_json.contains(user_info[ass_ct])) {
+            user_db[user_id].height = req_json[user_info[ass_ct]];
+            is_valid = true;
+        }
+        ass_ct++;
+        if(req_json.contains(user_info[ass_ct])) {
+            user_db[user_id].job = req_json[user_info[ass_ct]];
+            is_valid = true;
+        }
+        ass_ct++;
+        if(req_json.contains(user_info[ass_ct])) {
+            user_db[user_id].hobby = req_json[user_info[ass_ct]];
+            is_valid = true;
         }
 
+        if(!is_valid) {
+            res.status = 404;
+            res.set_content(R"({"error":"Info not found"})", "application/json");
+            return;
+        }
     });
 
     // /api/send - 傳送訊息（加入至conversation中）
