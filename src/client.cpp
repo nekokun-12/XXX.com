@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
-#include <map>
 #include <string>
+#include <map>
 #include "httplib.h"
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
@@ -34,9 +34,6 @@ int main()
                     for (int i = 0; i != 6; i++){
                         std::cout << user_json[i][0] << " : " << user_json[i][2];
                     }
-                }
-                else if (res -> status == 404){
-
                 }
             else {
                 std::cout << "POST 請求失敗\n";
@@ -221,6 +218,18 @@ int main()
         // /api/get_message/:index - 取得指定訊息
         else if(command == "get message")
         {
+            // POST /api/get_message/:index - 顯示各項功能
+            if (auto res = cli.Post("/api/get_message/:index")){
+                if (res -> status == 200){
+                    
+                }
+                else if (res -> status == 404){
+
+                }
+            else {
+                std::cout << "POST 請求失敗\n";
+            }}
+
 
         }
 
