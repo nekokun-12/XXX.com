@@ -4,23 +4,29 @@
 #include <string>
 #include "httplib.h"
 #include <nlohmann/json.hpp>
+using json = nlohmann::json;
+
 #include <user/user_info.h>
 #include <user/function.h>
 #include <user/conversation.h>
-using json = nlohmann::json;
 
 int main()
 {
     httplib::Client cli("localhost", 8080);
 
-    std::cout << " 輸入0 : /help 顯示各種功能 \n";
+    std::cout << "歡迎來到全球最大？？網站 XXX.com\n"
+              << "輸入 help 以顯示各種功能 \n";
+    
+    std::string command;
+    int user_id = 0;
+
     while(true)
     {
-        int n,id = 1;
-        std::cin >> n;
-        if(n == 0)// help
+        std::getline(std::cin, command);
+
+        // /api/help - 顯示各項功能
+        if (command == "help")
         {
-            // POST /api/help - 顯示各項功能
             if (auto res = cli.Post("/api/help")){
                 if (res -> status == 200){
                     json user_json = json::parse(res->body);
@@ -35,13 +41,12 @@ int main()
             else {
                 std::cout << "POST 請求失敗\n";
             }}
-
-
         }
         
-        else if (n == 1)// register
+        // /api/register - 接收 JSON 格式的新用戶資料，建立新用戶
+        else if (command == "register")
         {
-            std::cout << "\n建立新用戶（輸入資料）" << std::endl;
+            std::cout << "建立新用戶（輸入資料）\n";
 
             std::string password, name,gender,  job, hobby;
             int age, weight, height;
@@ -87,29 +92,27 @@ int main()
                 std::cerr << "建立用戶失敗，狀態：" << (res2 ? res2->status : 0) << std::endl;
                 return 1;
             }
-            std::cout << "Your id is: " << id << "\n" ;
-            id++;
+            std::cout << "Your id is: " << user_id << "\n" ;
+            user_id++;
             
         }
-        else if(n == 2)// user_info/:id
+
+        // /api/user_info/:id - 取得指定 ID 的用戶資訊
+        else if(command == "get user info")
         {
             httplib::Client cli("localhost", 8080); // 本機伺服器
-
 
             int id;
             std::cout << "請輸入要查詢的用戶 ID：";
             std::cin >> id;
-
 
             // 建立 JSON 請求資料
             json request_body = {
                 {"id", id}
             };
 
-
             // 傳送 POST 請求，內容為 JSON
             auto res = cli.Post("/api/get_user", request_body.dump(), "application/json");
-
 
             if (res && res->status == 200) {
                 // 成功收到伺服器回應
@@ -131,11 +134,10 @@ int main()
                     std::cout << "回應內容：" << res->body << std::endl;
                 }
             }
-
-
         }
 
-        else if(n == 3)// change_info/:id
+        // /api/change_info/:id - 修改指定用戶特定資訊
+        else if(command == "change info")
         {
             httplib::Client cli("localhost", 8080);
 
@@ -190,7 +192,9 @@ int main()
                 }
             }
         }
-        else if(n == 4)// send_Message
+
+        // /api/send - 傳送訊息（加入至conversation中）
+        else if (command == "send message")
         {
             int id;
             std::string message;
@@ -213,17 +217,27 @@ int main()
                 std::cerr << "傳送失敗，狀態：" << (res ? res->status : 0) << std::endl;
             }
         }
-        else if(n == 5)// get_message/:index
+
+        // /api/get_message/:index - 取得指定訊息
+        else if(command == "get message")
         {
 
         }
-        else if(n == 6)// end
+
+        // END
+        else if(command == "end")
         {
             break;
         }
-    }     
- 
 
+        // ELSE
+        else
+        {
+            std::cout << "指令錯誤，請輸入 \"help\" 以取得功能列表\n";
+        }
+    }
+
+    std::cout << "感謝您的使用\n";
 
     return 0;
 }
